@@ -2,8 +2,6 @@
 
 on:
   workflow_dispatch:
-    branch:
-      - main
 
 jobs:
   test-get-version:
