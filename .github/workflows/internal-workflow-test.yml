@@ -2,23 +2,25 @@
 
 on:
   workflow_dispatch:
-    
+    branch:
+      - main
+
 jobs:
-    test-get-version:
-        name: Test Get Version
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v2
-            - name: Get Version
-              id: get_version
-              uses: frankhaugen/dotnet-get-version.yml@main
-              with:
-                repository: ${{ github.repository }}
-                releases-only: true
-            - name: Echo Version
-              run: echo ${{ steps.get_version.outputs.ReleaseVersion }}
-            - name: Echo Preview Assembly Version
-              run: echo ${{ steps.get_version.outputs.PreviewAssemblyVersion }}
-            - name: Echo Preview Package Version
-              run: echo ${{ steps.get_version.outputs.PreviewPackageVersion }}
+  test-get-version:
+    name: Test Get Version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get Version
+        id: get_version
+        uses: frankhaugen/dotnet-get-version.yml@main
+        with:
+          repository: ${{ github.repository }}
+          releases-only: true
+      - name: Echo Version
+        run: echo ${{ steps.get_version.outputs.ReleaseVersion }}
+      - name: Echo Preview Assembly Version
+        run: echo ${{ steps.get_version.outputs.PreviewAssemblyVersion }}
+      - name: Echo Preview Package Version
+        run: echo ${{ steps.get_version.outputs.PreviewPackageVersion }}
                 
