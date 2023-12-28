@@ -1,0 +1,35 @@
+name: .NET CI/CD Workflow for nugets (Ubuntu)
+
+on:
+  workflow_call:
+    outputs:
+      ReleaseVersion: ${{ jobs.prepare_versions.outputs.ReleaseVersion }}
+      PreviewAssemblyVersion: ${{ jobs.prepare_versions.outputs.PreviewAssemblyVersion }}
+      PreviewPackageVersion: ${{ jobs.prepare_versions.outputs.PreviewPackageVersion }}
+  workflow_dispatch:
+    outputs:
+      ReleaseVersion: ${{ jobs.prepare_versions.outputs.ReleaseVersion }}
+      PreviewAssemblyVersion: ${{ jobs.prepare_versions.outputs.PreviewAssemblyVersion }}
+      PreviewPackageVersion: ${{ jobs.prepare_versions.outputs.PreviewPackageVersion }}
+      
+jobs:
+  prepare_versions:
+    name: Create Version Strings
+    runs-on: ubuntu-latest
+    outputs:
+      ReleaseVersion: ${{ steps.find.outputs.tag }}
+      PreviewAssemblyVersion: ${{ steps.set_version.outputs.preview_assembly_version }}
+      PreviewPackageVersion: ${{ steps.set_version.outputs.preview_package_version }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Find Latest Tag
+        id: find
+        uses: oprypin/find-latest-tag@v1.0.4
+        with:
+          repository: ${{ github.repository }}
+          releases-only: true
+      - name: Set version output
+        id: set_version
+        run: |
+          echo "::set-output name=preview_assembly_version::${{ steps.find.outputs.tag }}.${{ github.run_number }}"
+          echo "::set-output name=preview_package_version::${{ steps.find.outputs.tag }}.${{ github.run_number }}-preview"

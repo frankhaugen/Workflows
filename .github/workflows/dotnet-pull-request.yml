@@ -1,0 +1,29 @@
+﻿name: Pull Request Workflow for nugets (Ubuntu)
+
+on:
+  workflow_call:
+    inputs:
+      ReleaseVersion: '${{ github.event.inputs.ReleaseVersion }}'
+      PreviewAssemblyVersion: ${{ github.event.inputs.PreviewAssemblyVersion }}
+      PreviewPackageVersion: ${{ github.event.inputs.PreviewPackageVersion }}
+  workflow_dispatch:
+    inputs:
+      ReleaseVersion: ${{ github.event.inputs.ReleaseVersion }}
+      PreviewAssemblyVersion: ${{ github.event.inputs.PreviewAssemblyVersion }}
+      PreviewPackageVersion: ${{ github.event.inputs.PreviewPackageVersion }}
+
+jobs:
+  pull_request:
+    name: Pull Request Job
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+      - name: Build (${{ PreviewAssemblyVersion }})
+        run: dotnet build --configuration Release /p:Version=${{ PreviewAssemblyVersion }}
+      - name: Test
+        run: dotnet test --configuration Release --no-build

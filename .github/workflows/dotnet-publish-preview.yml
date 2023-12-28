@@ -1,0 +1,33 @@
+﻿name: Publish Preview Workflow for nugets (Ubuntu)
+
+on:
+  workflow_call:
+    inputs:
+      ReleaseVersion: '${{ github.event.inputs.ReleaseVersion }}'
+      PreviewAssemblyVersion: ${{ github.event.inputs.PreviewAssemblyVersion }}
+      PreviewPackageVersion: ${{ github.event.inputs.PreviewPackageVersion }}
+  workflow_dispatch:
+    inputs:
+      ReleaseVersion: ${{ github.event.inputs.ReleaseVersion }}
+      PreviewAssemblyVersion: ${{ github.event.inputs.PreviewAssemblyVersion }}
+      PreviewPackageVersion: ${{ github.event.inputs.PreviewPackageVersion }}
+
+jobs:
+  build_pack_publish_preview:
+    name: Merge Job
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+      - name: Build (${{ needs.prepare_versions.outputs.PreviewAssemblyVersion }})
+        run: dotnet build --configuration Release /p:Version=${{ needs.prepare_versions.outputs.PreviewAssemblyVersion }}
+      - name: Test
+        run: dotnet test --configuration Release --no-build
+      - name: Pack
+        run: dotnet pack --configuration Release --no-build --output nupkgs /p:Version=${{ needs.prepare_versions.outputs.PreviewPackageVersion }}
+      - name: Publish NuGet
+        run: dotnet nuget push "**/*.nupkg" -k ${{ secrets.NugetKey }} -s https://api.nuget.org/v3/index.json --skip-duplicate
