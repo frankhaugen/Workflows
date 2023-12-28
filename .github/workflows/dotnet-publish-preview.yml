@@ -3,14 +3,23 @@
 on:
   workflow_call:
     inputs:
-      ReleaseVersion: '${{ github.event.inputs.ReleaseVersion }}'
-      PreviewAssemblyVersion: ${{ github.event.inputs.PreviewAssemblyVersion }}
-      PreviewPackageVersion: ${{ github.event.inputs.PreviewPackageVersion }}
+      ReleaseVersion:
+        type: string
+      PreviewAssemblyVersion:
+        type: string
+      PreviewPackageVersion:
+        type: string
   workflow_dispatch:
     inputs:
-      ReleaseVersion: ${{ github.event.inputs.ReleaseVersion }}
-      PreviewAssemblyVersion: ${{ github.event.inputs.PreviewAssemblyVersion }}
-      PreviewPackageVersion: ${{ github.event.inputs.PreviewPackageVersion }}
+      ReleaseVersion:
+        description: 'Release Version'
+        required: true
+      PreviewAssemblyVersion:
+        description: 'Preview Assembly Version'
+        required: true
+      PreviewPackageVersion:
+        description: 'Preview Package Version'
+        required: true
 
 jobs:
   build_pack_publish_preview:
@@ -23,11 +32,11 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0.x
-      - name: Build (${{ needs.prepare_versions.outputs.PreviewAssemblyVersion }})
-        run: dotnet build --configuration Release /p:Version=${{ needs.prepare_versions.outputs.PreviewAssemblyVersion }}
+      - name: Build (${{ PreviewAssemblyVersion }})
+        run: dotnet build --configuration Release /p:Version=${{ PreviewAssemblyVersion }}
       - name: Test
         run: dotnet test --configuration Release --no-build
       - name: Pack
-        run: dotnet pack --configuration Release --no-build --output nupkgs /p:Version=${{ needs.prepare_versions.outputs.PreviewPackageVersion }}
+        run: dotnet pack --configuration Release --no-build --output nupkgs /p:Version=${{ PreviewPackageVersion }}
       - name: Publish NuGet
         run: dotnet nuget push "**/*.nupkg" -k ${{ secrets.NugetKey }} -s https://api.nuget.org/v3/index.json --skip-duplicate

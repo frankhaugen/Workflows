@@ -3,14 +3,23 @@
 on:
   workflow_call:
     inputs:
-      ReleaseVersion: '${{ github.event.inputs.ReleaseVersion }}'
-      PreviewAssemblyVersion: ${{ github.event.inputs.PreviewAssemblyVersion }}
-      PreviewPackageVersion: ${{ github.event.inputs.PreviewPackageVersion }}
+      ReleaseVersion:
+        type: string
+      PreviewAssemblyVersion:
+        type: string
+      PreviewPackageVersion:
+        type: string
   workflow_dispatch:
     inputs:
-      ReleaseVersion: ${{ github.event.inputs.ReleaseVersion }}
-      PreviewAssemblyVersion: ${{ github.event.inputs.PreviewAssemblyVersion }}
-      PreviewPackageVersion: ${{ github.event.inputs.PreviewPackageVersion }}
+      ReleaseVersion:
+        description: 'Release Version'
+        required: true
+      PreviewAssemblyVersion:
+        description: 'Preview Assembly Version'
+        required: true
+      PreviewPackageVersion:
+        description: 'Preview Package Version'
+        required: true
 
 jobs:
   pull_request:

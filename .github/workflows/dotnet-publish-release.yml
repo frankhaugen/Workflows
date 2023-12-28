@@ -3,14 +3,23 @@ name: Release Workflow for nugets (Ubuntu)
 on:
   workflow_call:
     inputs:
-      ReleaseVersion: '${{ github.event.inputs.ReleaseVersion }}'
-      PreviewAssemblyVersion: ${{ github.event.inputs.PreviewAssemblyVersion }}
-      PreviewPackageVersion: ${{ github.event.inputs.PreviewPackageVersion }}
+      ReleaseVersion:
+        type: string
+      PreviewAssemblyVersion:
+        type: string
+      PreviewPackageVersion:
+        type: string
   workflow_dispatch:
     inputs:
-      ReleaseVersion: ${{ github.event.inputs.ReleaseVersion }}
-      PreviewAssemblyVersion: ${{ github.event.inputs.PreviewAssemblyVersion }}
-      PreviewPackageVersion: ${{ github.event.inputs.PreviewPackageVersion }}
+      ReleaseVersion:
+        description: 'Release Version'
+        required: true
+      PreviewAssemblyVersion:
+        description: 'Preview Assembly Version'
+        required: true
+      PreviewPackageVersion:
+        description: 'Preview Package Version'
+        required: true
   
 jobs:
   build_pack_publish_release:
@@ -23,12 +32,12 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0.x
-      - name: Build (${{ needs.prepare_versions.outputs.ReleaseVersion }})
-        run: dotnet build --configuration Release /p:Version=${{ needs.prepare_versions.outputs.ReleaseVersion }}
+      - name: Build (${{ ReleaseVersion }})
+        run: dotnet build --configuration Release /p:Version=${{ ReleaseVersion }}
       - name: Test
         run: dotnet test --configuration Release --no-build
       - name: Pack
-        run: dotnet pack --configuration Release --no-build --output nupkgs /p:Version=${{ needs.prepare_versions.outputs.ReleaseVersion }}
+        run: dotnet pack --configuration Release --no-build --output nupkgs /p:Version=${{ ReleaseVersion }}
       - name: Publish NuGet
         run: dotnet nuget push "**/*.nupkg" -k ${{ secrets.NugetKey }} -s https://api.nuget.org/v3/index.json --skip-duplicate
       - name: Set GitHub Package Source
