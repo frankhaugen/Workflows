@@ -2,9 +2,11 @@
 
 on:
   workflow_dispatch:
-    branch:
-      - main
-
+    inputs:
+      ReleaseVersion: ${{ github.event.inputs.ReleaseVersion }}
+      PreviewAssemblyVersion: ${{ github.event.inputs.PreviewAssemblyVersion }}
+      PreviewPackageVersion: ${{ github.event.inputs.PreviewPackageVersion }}
+      
 jobs:
   test-get-version:
     name: Test Get Version
