@@ -2,23 +2,15 @@ name: .NET CI/CD Workflow for nugets (Ubuntu)
 
 on:
   workflow_call:
-    outputs:
-      ReleaseVersion: ${{ jobs.prepare_versions.outputs.ReleaseVersion }}
-      PreviewAssemblyVersion: ${{ jobs.prepare_versions.outputs.PreviewAssemblyVersion }}
-      PreviewPackageVersion: ${{ jobs.prepare_versions.outputs.PreviewPackageVersion }}
   workflow_dispatch:
-    outputs:
-      ReleaseVersion: ${{ jobs.prepare_versions.outputs.ReleaseVersion }}
-      PreviewAssemblyVersion: ${{ jobs.prepare_versions.outputs.PreviewAssemblyVersion }}
-      PreviewPackageVersion: ${{ jobs.prepare_versions.outputs.PreviewPackageVersion }}
-      
+
 jobs:
   prepare_versions:
     name: Create Version Strings
     runs-on: ubuntu-latest
     outputs:
       ReleaseVersion: ${{ steps.find.outputs.tag }}
-      PreviewAssemblyVersion: ${{ steps.set_version.outputs.preview_assembly_version }}
+      PreviewAssemblyVersion: ${{ steps.set_version.outputs.prevew_assembly_version }}
       PreviewPackageVersion: ${{ steps.set_version.outputs.preview_package_version }}
     steps:
       - uses: actions/checkout@v3
