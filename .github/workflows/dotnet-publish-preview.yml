@@ -5,10 +5,13 @@ on:
     inputs:
       ReleaseVersion:
         type: string
+        required: true
       PreviewAssemblyVersion:
         type: string
+        required: true
       PreviewPackageVersion:
         type: string
+        required: true
   workflow_dispatch:
     inputs:
       ReleaseVersion:
@@ -32,11 +35,11 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0.x
-      - name: Build (${{ PreviewAssemblyVersion }})
-        run: dotnet build --configuration Release /p:Version=${{ PreviewAssemblyVersion }}
+      - name: Build (${{ inputs.PreviewAssemblyVersion }})
+        run: dotnet build --configuration Release /p:Version=${{ inputs.PreviewAssemblyVersion }}
       - name: Test
         run: dotnet test --configuration Release --no-build
       - name: Pack
-        run: dotnet pack --configuration Release --no-build --output nupkgs /p:Version=${{ PreviewPackageVersion }}
+        run: dotnet pack --configuration Release --no-build --output nupkgs /p:Version=${{ inputs.PreviewPackageVersion }}
       - name: Publish NuGet
         run: dotnet nuget push "**/*.nupkg" -k ${{ secrets.NugetKey }} -s https://api.nuget.org/v3/index.json --skip-duplicate
