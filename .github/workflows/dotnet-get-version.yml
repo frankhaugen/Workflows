@@ -1,18 +1,8 @@
 name: Get Version Workflow for nugets (Ubuntu)
 
 on:
-  workflow_call:
-    outputs:
-      ReleaseVersion:
-        description: "The version string for the release"
-        value: ${{ jobs.get_version.outputs.ReleaseVersion }}
-      PreviewAssemblyVersion:
-        description: "The version string for the preview assembly"
-        value: ${{ jobs.get_version.outputs.PreviewAssemblyVersion }}
-      PreviewPackageVersion:
-        description: "The version string for the preview package"
-        value: ${{ jobs.get_version.outputs.PreviewPackageVersion }}
   workflow_dispatch:
+  workflow_call:
     outputs:
       ReleaseVersion:
         description: "The version string for the release"
