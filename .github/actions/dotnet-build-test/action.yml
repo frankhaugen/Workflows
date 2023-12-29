@@ -4,33 +4,33 @@ name: 'DotNet Build and Test'
 description: 'Build and Test .NET project'
 
 inputs:
-  configuration:
-    description: 'Configuration to build'
-    required: false
-    default: 'Release'
-  assemblyVersion:
-    description: 'Assembly Version'
-    required: true
-    default: 'not-set'
-  dotnetVersion:
-    description: 'DotNet Version'
-    required: false
-    default: '8.0.x'
+    configuration:
+        description: 'Configuration to build'
+        required: false
+        default: 'Release'
+    assemblyVersion:
+        description: 'Assembly Version'
+        required: true
+        default: 'not-set'
+    dotnetVersion:
+        description: 'DotNet Version'
+        required: false
+        default: '8.0.x'
 
 runs:
-  using: "composite"
-  steps:
-    - name: Setup .NET
-      uses: ./.github/actions/dotnet-setup@main
-      with:
-        dotnetVersion: ${{ inputs.dotnetVersion }}
-        configuration: ${{ inputs.configuration }}
-    - name: Build
-      uses: ./.github/actions/dotnet-build@main
-      with:
-        configuration: ${{ inputs.configuration }}
-        assemblyVersion: ${{ inputs.assemblyVersion }}
-    - name: Test
-      uses: ./.github/actions/dotnet-test@main
-      with:
-        configuration: ${{ inputs.configuration }}
+    using: "composite"
+    steps:
+        -   name: Setup .NET
+            uses: ./.github/actions/dotnet-setup@main
+            with:
+                dotnetVersion: ${{ inputs.dotnetVersion }}
+                configuration: ${{ inputs.configuration }}
+        -   name: Build
+            uses: ./.github/actions/dotnet-build@main
+            with:
+                configuration: ${{ inputs.configuration }}
+                assemblyVersion: ${{ inputs.assemblyVersion }}
+        -   name: Test
+            uses: ./.github/actions/dotnet-test@main
+            with:
+                configuration: ${{ inputs.configuration }}

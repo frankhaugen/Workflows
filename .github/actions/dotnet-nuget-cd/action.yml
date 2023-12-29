@@ -1,0 +1,47 @@
+﻿# .github/actions/dotnet-nuget-cd/action.yml
+name: '.NET NuGet Continuous Delivery (pack and publish)'
+description: 'Package and publish a .NET project to NuGet.org'
+
+inputs:
+    dotnetVersion:
+        description: '.NET SDK version'
+        required: false
+        default: '8.0.x'
+    
+    configuration:
+        description: 'Build configuration (Release/Debug)'
+        required: false
+        default: 'Release'
+    
+    outputDirectory:
+        description: 'Output directory for NuGet package'
+        required: false
+        default: 'nupkgs'
+    
+    nugetKey:
+        description: 'NuGet API Key'
+        required: true
+    
+    packageVersion:
+        description: 'Package version'
+        required: true
+
+runs:
+    using: "composite"
+    steps:
+        -   name: Setup .NET Core (${{ inputs.dotnetVersion }})
+            uses: ./.github/actions/dotnet-setup
+            with:
+                dotnetVersion: ${{ inputs.dotnetVersion }}
+        -   name: Pack Project
+            uses: ./.github/actions/dotnet-pack
+            with:
+                configuration: ${{ inputs.configuration }}
+                outputDirectory: ${{ inputs.outputDirectory }}
+                dotnetVersion: ${{ inputs.dotnetVersion }}
+                packageVersion: ${{ inputs.packageVersion }}
+        -   name: Publish to NuGet.org
+            uses: ./.github/actions/publish-nuget
+            with:
+                nugetKey: ${{ inputs.nugetKey }}
+                globPattern: '**/*.nupkg'

@@ -2,25 +2,25 @@
 name: 'Build .NET Project'
 description: 'Build a .NET project with specified parameters'
 inputs:
-  configuration:
-    description: 'Build configuration (Release/Debug)'
-    required: false
-    default: 'Release'
-  assemblyVersion:
-    description: 'Assembly version'
-    required: false
-    default: '0.1'
-  dotnetVersion:
-    description: '.NET SDK version'
-    required: false
-    default: '8.0.x'
+    configuration:
+        description: 'Build configuration (Release/Debug)'
+        required: false
+        default: 'Release'
+    assemblyVersion:
+        description: 'Assembly version'
+        required: false
+        default: '0.1'
+    dotnetVersion:
+        description: '.NET SDK version'
+        required: false
+        default: '8.0.x'
 runs:
-  using: "composite"
-  steps:
-    - name: Setup .NET Core (${{ inputs.dotnetVersion }})
-      uses: ./.github/actions/dotnet-setup
-      with:
-        dotnetVersion: ${{ inputs.dotnetVersion }}
-    - name: Build Project
-      run: dotnet build --configuration ${{ inputs.configuration }} /p:Version=${{ inputs.assemblyVersion }}
-      shell: bash
+    using: "composite"
+    steps:
+        -   name: Setup .NET Core (${{ inputs.dotnetVersion }})
+            uses: ./.github/actions/dotnet-setup
+            with:
+                dotnetVersion: ${{ inputs.dotnetVersion }}
+        -   name: Build Project
+            run: dotnet build --configuration ${{ inputs.configuration }} /p:Version=${{ inputs.assemblyVersion }}
+            shell: bash

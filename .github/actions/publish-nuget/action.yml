@@ -2,14 +2,14 @@
 name: 'Publish to NuGet'
 description: 'Publish NuGet package'
 inputs:
-  nugetKey:
-    description: 'NuGet API Key'
-    required: true
-  globPattern:
-    description: 'Glob pattern to find files to publish'
-    required: true
+    nugetKey:
+        description: 'NuGet API Key'
+        required: true
+    globPattern:
+        description: 'Glob pattern to find files to publish'
+        required: true
 runs:
-  using: "composite"
-  steps:
-    - run: dotnet nuget push "${{ inputs.globPattern }}" -k ${{ inputs.nugetKey }} -s https://api.nuget.org/v3/index.json --skip-duplicate
-      shell: bash
+    using: "composite"
+    steps:
+        -   run: dotnet nuget push "${{ inputs.globPattern }}" -k ${{ inputs.nugetKey }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+            shell: bash

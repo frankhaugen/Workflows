@@ -2,60 +2,60 @@
 name: 'Publish Repository'
 description: 'Publish to various platforms, with configurable flags)'
 inputs:
-  # Shared
-  globPattern:
-    description: 'Glob pattern to find files to publish'
-    required: true
-  githubToken:
-    description: 'GitHub Token, required for publishing to GitHub Packages and attaching to GitHub Release'
-    default: 'not-set'
-    required: false
-  
-  # NuGet
-  publishToNuGet:
-    description: 'Flag to publish to NuGet'
-    required: false
-    default: 'false'
-  nugetKey:
-    description: 'NuGet API Key'
-    default: 'not-set'
-    required: false
-  
-  # GitHub Packages
-  publishToGitHubPackages:
-    description: 'Flag to publish to GitHub Packages'
-    required: false
-    default: 'false'
-  githubUsername:
-    description: 'GitHub Username'
-    default: 'not-set'
-    required: false
-  
-  # Attach to Release
-  attachToRelease:
-    description: 'Flag to attach to GitHub Release'
-    required: false
-    default: 'false'
+    # Shared
+    globPattern:
+        description: 'Glob pattern to find files to publish'
+        required: true
+    githubToken:
+        description: 'GitHub Token, required for publishing to GitHub Packages and attaching to GitHub Release'
+        default: 'not-set'
+        required: false
+    
+    # NuGet
+    publishToNuGet:
+        description: 'Flag to publish to NuGet'
+        required: false
+        default: 'false'
+    nugetKey:
+        description: 'NuGet API Key'
+        default: 'not-set'
+        required: false
+    
+    # GitHub Packages
+    publishToGitHubPackages:
+        description: 'Flag to publish to GitHub Packages'
+        required: false
+        default: 'false'
+    githubUsername:
+        description: 'GitHub Username'
+        default: 'not-set'
+        required: false
+    
+    # Attach to Release
+    attachToRelease:
+        description: 'Flag to attach to GitHub Release'
+        required: false
+        default: 'false'
 
 runs:
-  using: "composite"
-  steps:
-    - name: Publish to NuGet.org
-      if: ${{ inputs.publishToNuGet == 'true' }}
-      uses: ./.github/actions/publish-nuget
-      with:
-        nugetKey: ${{ inputs.nugetKey }}
-        globPattern: ${{ inputs.globPattern }}
-    - name: Publish to GitHub Packages
-      if: ${{ inputs.publishToGitHubPackages == 'true' }}
-      uses: ./.github/actions/publish-github-packages
-      with:
-        username: ${{ inputs.githubUsername }}
-        token: ${{ inputs.githubToken }}
-        globPattern: ${{ inputs.globPattern }}
-    - name: Attach to GitHub Release
-      if: ${{ inputs.attachToRelease == 'true' }}
-      uses: ./.github/actions/publish-release
-      with:
-        token: ${{ inputs.githubToken }}
-        globPattern: ${{ inputs.globPattern }}
+    using: "composite"
+    steps:
+        -   name: Publish to NuGet.org
+            if: ${{ inputs.publishToNuGet == 'true' }}
+            uses: ./.github/actions/publish-nuget
+            with:
+                nugetKey: ${{ inputs.nugetKey }}
+                globPattern: ${{ inputs.globPattern }}
+        -   name: Publish to GitHub Packages
+            if: ${{ inputs.publishToGitHubPackages == 'true' }}
+            uses: ./.github/actions/publish-github-packages
+            with:
+                username: ${{ inputs.githubUsername }}
+                token: ${{ inputs.githubToken }}
+                globPattern: ${{ inputs.globPattern }}
+        -   name: Attach to GitHub Release
+            if: ${{ inputs.attachToRelease == 'true' }}
+            uses: ./.github/actions/publish-release
+            with:
+                token: ${{ inputs.githubToken }}
+                globPattern: ${{ inputs.globPattern }}

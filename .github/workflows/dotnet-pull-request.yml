@@ -2,33 +2,17 @@
 
 on:
   workflow_call:
-    inputs:
-      ReleaseVersion:
-        type: string
-        required: false
-      PreviewAssemblyVersion:
-        type: string
-        required: true
-      PreviewPackageVersion:
-        type: string
-        required: false
+    secrets: inherit
   workflow_dispatch:
-    inputs:
-      ReleaseVersion:
-        description: 'Release Version'
-        required: false
-      PreviewAssemblyVersion:
-        description: 'Preview Assembly Version'
-        required: true
-      PreviewPackageVersion:
-        description: 'Preview Package Version'
-        required: false
+    secrets: inherit
 
 jobs:
   pull_request:
     name: Pull Request Job
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/actions/dotnet-ci@main
+      - name: Build and Test
+        uses: ./.github/actions/dotnet-ci
         with:
           configuration: Release
+          assemblyVersion: '0.0.1'

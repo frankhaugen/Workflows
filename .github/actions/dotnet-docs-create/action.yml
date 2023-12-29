@@ -1,28 +1,28 @@
 ﻿name: 'DefaultDocumentation Action'
 description: 'Generates markdown documentation from XML comments using DefaultDocumentation.Console'
 inputs:
-  dotnetVersion:
-    description: '.NET SDK version to use'
-    required: false
-    default: '8.0.x'
-  outputDirectory:
-    description: 'Output directory for documentation'
-    required: false
-    default: 'docs'
+    dotnetVersion:
+        description: '.NET SDK version to use'
+        required: false
+        default: '8.0.x'
+    outputDirectory:
+        description: 'Output directory for documentation'
+        required: false
+        default: 'docs'
 
 
 runs:
-  using: 'composite'
-  steps:
-    - name: Setup .NET Core (${{ inputs.dotnetVersion }})
-      uses: ./.github/actions/dotnet-setup
-      with:
-        dotnetVersion: ${{ inputs.dotnetVersion }}
+    using: 'composite'
+    steps:
+        -   name: Setup .NET Core (${{ inputs.dotnetVersion }})
+            uses: ./.github/actions/dotnet-setup
+            with:
+                dotnetVersion: ${{ inputs.dotnetVersion }}
 
-    - name: Install DefaultDocumentation.Console
-      run: dotnet tool install --global DefaultDocumentation.Console
-      shell: bash
+        -   name: Install DefaultDocumentation.Console
+            run: dotnet tool install --global DefaultDocumentation.Console
+            shell: bash
 
-    - name: Generate Documentation
-      run: defaultdocumentation
-      shell: bash
+        -   name: Generate Documentation
+            run: defaultdocumentation
+            shell: bash

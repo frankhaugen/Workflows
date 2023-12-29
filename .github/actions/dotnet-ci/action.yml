@@ -4,24 +4,28 @@ name: 'DotNet CI'
 description: 'Continuous Integration for .NET projects, builds and tests'
 
 inputs:
-  configuration:
-    description: 'Configuration to build'
-    required: false
-    default: 'Release'
+    configuration:
+        description: 'Configuration to build'
+        required: false
+        default: 'Release'
+    assemblyVersion:
+        description: 'Assembly version'
+        required: true
+    dotnetVersion:
+        description: '.NET SDK version'
+        required: false
+        default: '8.0.x'
 
 runs:
-  using: "composite"
-  steps:
-    - name: Checkout
-      uses: ./.github/actions/checkout-repo
-    - name: Prepare Versions
-      id: get_release_version
-      uses: ./.github/actions/get-latest-release-version
-    - name: Setup .NET
-      uses: ./.github/actions/dotnet-setup
-    - name: Build and Test
-      uses: ./.github/actions/dotnet-build-test
-      with:
-        configuration: ${{ inputs.configuration }}
-        assemblyVersion: ${{ steps.get_release_version.outputs.version }}
-#        assemblyVersion: ${{ env.GITHUB_ENV.version }}
+    using: "composite"
+    steps:
+        -   name: Checkout
+            uses: ./.github/actions/checkout-repo
+        -   name: Setup .NET
+            uses: ./.github/actions/dotnet-setup
+        -   name: Build and Test
+            uses: ./.github/actions/dotnet-build-test
+            with:
+                configuration: ${{ inputs.configuration }}
+                assemblyVersion: ${{ inputs.assemblyVersion }}
+                dotnetVersion: ${{ inputs.dotnetVersion }}

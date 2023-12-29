@@ -2,43 +2,25 @@
 
 on:
   workflow_call:
-    inputs:
-      ReleaseVersion:
-        type: string
-        required: true
-      PreviewAssemblyVersion:
-        type: string
-        required: true
-      PreviewPackageVersion:
-        type: string
-        required: true
   workflow_dispatch:
-    inputs:
-      ReleaseVersion:
-        description: 'Release Version'
-        required: true
-      PreviewAssemblyVersion:
-        description: 'Preview Assembly Version'
-        required: true
-      PreviewPackageVersion:
-        description: 'Preview Package Version'
-        required: true
 
 jobs:
   build_pack_publish_preview:
-    name: Merge Job
+    name: Publish Preview Job
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+      - name: Get version from latest release
+        id: get_version
+        uses: ./.github/actions/github-latest-release-version
+      - name: Run .NET CI Action
+        uses: ./.github/actions/dotnet-ci
         with:
-          dotnet-version: 8.0.x
-      - name: Build (${{ inputs.PreviewAssemblyVersion }})
-        run: dotnet build --configuration Release /p:Version=${{ inputs.PreviewAssemblyVersion }}
-      - name: Test
-        run: dotnet test --configuration Release --no-build
-      - name: Pack
-        run: dotnet pack --configuration Release --no-build --output nupkgs /p:Version=${{ inputs.PreviewPackageVersion }}
-      - name: Publish NuGet
-        run: dotnet nuget push "**/*.nupkg" -k ${{ secrets.NugetKey }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+          assemblyVersion: ${{ steps.get_version.outputs.version }}.${{ github.run_number }}
+      - name: Publish preview NuGet
+        uses: ./.github/actions/dotnet-nuget-cd
+        with:
+          dotnetVersion: 8.0.x
+          configuration: Release
+          nugetKey: ${{ secrets.NugetKey }}
+          outputDirectory: nupkgs
+          packageVersion: ${{ steps.get_version.outputs.version }}.${{ github.run_number }}-preview
