@@ -27,7 +27,6 @@ on:
 jobs:
   build_pack_publish_preview:
     name: Merge Job
-    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
