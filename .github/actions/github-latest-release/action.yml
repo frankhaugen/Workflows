@@ -32,6 +32,9 @@ outputs:
     published_at:
         description: 'Release Published At'
         value: ${{ steps.get_current_release.outputs.published_at }}
+    tag:
+        description: 'Release Tag'
+        value: ${{ steps.find-latest-tag.outputs.tag }}
 
 runs:
     using: "composite"
@@ -41,3 +44,9 @@ runs:
             uses: joutvhu/get-release@v1
             env:
                 GITHUB_TOKEN: ${{ inputs.token }}
+        -   name: Get Latest Release Version tag
+            id: find-latest-tag
+            uses: oprypin/find-latest-tag@v1.1.1
+            with:
+                repository: ${{ github.repository }}
+                releases-only: true

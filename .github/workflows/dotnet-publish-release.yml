@@ -3,32 +3,46 @@ name: Release Workflow for nugets (Ubuntu)
 on:
   workflow_call:
   workflow_dispatch:
-    
+
 jobs:
   build_pack_publish_release:
     name: Release Job    
     runs-on: ubuntu-latest
     steps:
-      - name: Get version from latest release
-        id: get_version
-        uses: frankhaugen/Workflows/.github/actions/github-latest-release-version@main
-      - name: Run .NET CI Action
-        uses: frankhaugen/Workflows/.github/actions/dotnet-ci@main
+      - uses: frankhaugen/Workflows/.github/actions/github-checkout@main
+      - uses: frankhaugen/Workflows/.github/actions/dotnet-setup@main
+      - name: Get latest release
+        id: get_release
+        uses: frankhaugen/Workflows/.github/actions/github-latest-release@main
+      - name: Run .NET Build Action
+        uses: frankhaugen/Workflows/.github/actions/dotnet-build@main
         with:
-          assemblyVersion: ${{ steps.get_version.outputs.version }}
-      - name: Pack
+          assemblyVersion: ${{ steps.get_release.outputs.tag }}
+          configuration: Release
+      - name: Run .NET Test Action
+        uses: frankhaugen/Workflows/.github/actions/dotnet-test@main
+        with:
+          configuration: Release
+      - name: Run .NET Pack Action
         uses: frankhaugen/Workflows/.github/actions/dotnet-pack@main
         with:
-          dotnetVersion: 8.0.x
           configuration: Release
           outputDirectory: nupkgs
-          packageVersion: ${{ steps.get_version.outputs.version }}
-      - name: Publish
-        uses: frankhaugen/Workflows/.github/actions/publish-repo@main
+          packageVersion: ${{ steps.get_release.outputs.tag }}
+    -   name: Publish to NuGet.org
+        uses: frankhaugen/Workflows/.github/actions/publish-nuget@main
         with:
-          attachToRelease: true
-          publishToGitHubPackages: true
-          publishToNuGet: true
+          nugetKey: ${{ secrets.nugetKey }}
           globPattern: '**/*.nupkg'
-          nugetKey: ${{ secrets.NugetKey }}
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
+    -   name: Publish to GitHub Packages
+        uses: frankhaugen/Workflows/.github/actions/publish-github-packages@main
+        with:
+          username: ${{ github.repository_owner }}
+          token: ${{ github.token }}
+          globPattern: '**/*.nupkg'
+    -   name: Attach to GitHub Release
+        uses: frankhaugen/Workflows/.github/actions/publish-release@main
+        with:
+          token: ${{ github.token }}
+          globPattern: '**/*.nupkg'
+          releaseId: ${{ steps.get_release.outputs.id }}

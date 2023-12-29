@@ -1,4 +1,4 @@
-﻿# .github/actions/checkout-repo/action.yml
+﻿# .github/actions/checkout/action.yml
 name: 'Checkout Repository'
 description: 'Checkout the repository'
 runs:
