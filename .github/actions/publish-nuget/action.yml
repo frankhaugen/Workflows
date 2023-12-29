@@ -1,0 +1,15 @@
+﻿# .github/actions/publish-nuget/action.yml
+name: 'Publish to NuGet'
+description: 'Publish NuGet package'
+inputs:
+  nugetKey:
+    description: 'NuGet API Key'
+    required: true
+  packagePath:
+    description: 'Path to NuGet package'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - run: dotnet nuget push "${{ inputs.packagePath }}" -k ${{ inputs.nugetKey }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+      shell: bash

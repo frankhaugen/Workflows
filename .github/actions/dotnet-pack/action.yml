@@ -1,0 +1,30 @@
+﻿# .github/actions/dotnet-pack/action.yml
+name: 'Package .NET Project'
+description: 'Package a .NET project into a NuGet package'
+inputs:
+  configuration:
+    description: 'Build configuration (Release/Debug)'
+    required: false
+    default: 'Release'
+  outputDirectory:
+    description: 'Output directory for NuGet package'
+    required: false
+    default: 'nupkgs'
+  dotnetVersion:
+    description: '.NET SDK version'
+    required: false
+    default: '8.0.x'
+  includeSymbols:
+    description: 'Include symbols in the package'
+    required: false
+    default: 'false'
+runs:
+  using: "composite"
+  steps:
+    - name: Setup .NET Core
+      uses: ./.github/actions/dotnet-setup
+      with:
+        dotnetVersion: ${{ inputs.dotnetVersion }}
+    - name: Pack Project
+      run: dotnet pack --configuration ${{ inputs.configuration }} --output ${{ inputs.outputDirectory }} --include-symbols=${{ inputs.includeSymbols }}
+      shell: bash

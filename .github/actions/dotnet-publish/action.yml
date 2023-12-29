@@ -1,0 +1,61 @@
+﻿# .github/actions/dotnet-publish/action.yml
+name: 'DotNet Publish'
+description: 'Publish .NET project to various platforms'
+inputs:
+  # Shared
+  packagePath:
+    description: 'Path to NuGet package'
+    default: 'not-set'
+    required: false
+  githubToken:
+    description: 'GitHub Token'
+    default: 'not-set'
+    required: false
+  
+  # NuGet
+  publishToNuGet:
+    description: 'Flag to publish to NuGet'
+    required: false
+    default: 'false'
+  nugetKey:
+    description: 'NuGet API Key'
+    default: 'not-set'
+    required: false
+  
+  # GitHub Packages
+  publishToGitHubPackages:
+    description: 'Flag to publish to GitHub Packages'
+    required: false
+    default: 'false'
+  githubUsername:
+    description: 'GitHub Username'
+    default: 'not-set'
+    required: false
+    
+  # Attach to Release
+  attachToRelease:
+    description: 'Flag to attach to GitHub Release'
+    required: false
+    default: 'false'
+  
+  
+runs:
+  using: "composite"
+  steps:
+    - if: ${{ inputs.publishToNuGet == 'true' }}
+      uses: ./.github/actions/publish-nuget@main
+      with:
+        nugetKey: ${{ inputs.nugetKey }}
+        packagePath: ${{ inputs.packagePath }}
+    - if: ${{ inputs.publishToGitHubPackages == 'true' }}
+      uses: ./.github/actions/publish-github-packages@v1
+      with:
+        username: ${{ inputs.githubUsername }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        packagePath: ${{ inputs.packagePath }}
+    - if: ${{ inputs.attachToRelease == 'true' }}
+      uses: ./.github/actions/attach-to-release@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        releaseId: ${{ github.event.release.id }}
+        filePath: ${{ inputs.packagePath }}
