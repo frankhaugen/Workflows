@@ -9,8 +9,14 @@ jobs:
     name: Pull Request Job
     runs-on: ubuntu-latest
     steps:
-      - name: Build and Test
-        uses: frankhaugen/Workflows/.github/actions/dotnet-ci@main
+      - uses: frankhaugen/Workflows/.github/actions/github-checkout@main
+      - uses: frankhaugen/Workflows/.github/actions/dotnet-setup@main
+      - name: Build
+        uses: frankhaugen/Workflows/.github/actions/dotnet-build@main
+        with:
+          assemblyVersion: 0.0.1
+          configuration: Release
+      - name: Test
+        uses: frankhaugen/Workflows/.github/actions/dotnet-test@main
         with:
           configuration: Release
-          assemblyVersion: '0.0.1'
