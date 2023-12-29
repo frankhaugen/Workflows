@@ -2,9 +2,7 @@
 
 on:
   workflow_call:
-    secrets: inherit
   workflow_dispatch:
-    secrets: inherit
 
 jobs:
   pull_request:
