@@ -6,11 +6,16 @@ inputs:
     description: 'Default version if no release is found'
     required: false
     default: '0.1'
+
+outputs:
+  version:
+    description: 'Latest Release Version'
+    value: ${{ env.GITHUB_ENV.version }}
+
 runs:
   using: "composite"
   steps:
-    - name: Set Output
-      id: get_version
+    - name: Get Latest Release Version tag or default
       run: |
         LATEST_VERSION=$(gh release list | head -n 1 | awk '{print $1}') || true
         if [ -z "$LATEST_VERSION" ]; then
