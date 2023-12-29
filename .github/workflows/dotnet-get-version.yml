@@ -33,17 +33,17 @@ jobs:
         
       - name: Get Release Version
         id: get_release_version 
-        run: echo "release_version=${{ steps.version.outputs.tag }}.${{ github.run_number }}" >> $GITHUB_STATE
+        run: echo "release_version=${{ steps.version.outputs.tag }}.${{ github.run_number }}" >> $GITHUB_ENV
       
       - name: Get Preview Assembly Version
         id: get_preview_assembly_version
-        run: echo "preview_assembly_version=${{ steps.version.outputs.tag }}.${{ github.run_number }}" >> $GITHUB_STATE
+        run: echo "preview_assembly_version=${{ steps.version.outputs.tag }}.${{ github.run_number }}" >> $GITHUB_ENV
 
       - name: Get Preview Package Version
         id: get_preview_package_version
-        run: echo "preview_package_version=${{ steps.version.outputs.tag }}.${{ github.run_number }}-preview" >> $GITHUB_STATE
+        run: echo "preview_package_version=${{ steps.version.outputs.tag }}.${{ github.run_number }}-preview" >> $GITHUB_ENV
       - name: Validate Release Version
         run: |
-          echo "Checking GITHUB_STATE for release_version..."
-          cat $GITHUB_STATE
+          echo "Checking GITHUB_ENV for release_version..."
+          ech0 "${{ env.release_version }}"
           echo "Completed checking."
