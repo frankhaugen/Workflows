@@ -45,5 +45,5 @@ jobs:
       - name: Validate Release Version
         run: |
           echo "Checking GITHUB_ENV for release_version..."
-          ech0 "${{ env.release_version }}"
+          echo "${{ env.release_version }}"
           echo "Completed checking."
