@@ -42,3 +42,8 @@ jobs:
       - name: Get Preview Package Version
         id: get_preview_package_version
         run: echo "preview_package_version=${{ steps.version.outputs.tag }}.${{ github.run_number }}-preview" >> $GITHUB_STATE
+      - name: Validate Release Version
+        run: |
+          echo "Checking GITHUB_STATE for release_version..."
+          cat $GITHUB_STATE
+          echo "Completed checking."
