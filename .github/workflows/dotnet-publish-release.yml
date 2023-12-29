@@ -27,7 +27,6 @@ on:
 jobs:
   build_pack_publish_release:
     name: Release Job
-    if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
