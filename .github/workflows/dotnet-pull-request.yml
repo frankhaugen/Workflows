@@ -11,12 +11,12 @@ jobs:
     steps:
       - uses: frankhaugen/Workflows/.github/actions/github-checkout@main
       - uses: frankhaugen/Workflows/.github/actions/dotnet-setup@main
-      - name: Build
+      - name: Run .NET Build Action
         uses: frankhaugen/Workflows/.github/actions/dotnet-build@main
         with:
           assemblyVersion: 0.0.1
           configuration: Release
-      - name: Test
+      - name: Run .NET Test Action
         uses: frankhaugen/Workflows/.github/actions/dotnet-test@main
         with:
           configuration: Release

@@ -14,6 +14,8 @@ jobs:
       - name: Get latest release
         id: get_release
         uses: frankhaugen/Workflows/.github/actions/github-latest-release@main
+        with:
+          token: ${{ github.token }}
       - name: Run .NET Build Action
         uses: frankhaugen/Workflows/.github/actions/dotnet-build@main
         with:
