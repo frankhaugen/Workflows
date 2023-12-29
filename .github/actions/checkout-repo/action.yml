@@ -1,0 +1,8 @@
+﻿# .github/actions/checkout-repo/action.yml
+name: 'Checkout Repository'
+description: 'Checkout the repository'
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout repository (${{ github.repository }})
+      uses: actions/checkout@v3

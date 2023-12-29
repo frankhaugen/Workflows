@@ -1,0 +1,27 @@
+﻿# .github/actions/attach-to-release/action.yml
+name: 'Publish to GitHub Release'
+description: 'Attach artifacts to a GitHub release'
+inputs:
+  token:
+    description: 'GitHub Token'
+    required: true
+  globPattern:
+    description: 'File path of artifacts'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Get Current Release
+      id: get_release
+      uses: ./.github/actions/github-latest-release@v1
+      with:
+        token: ${{ inputs.token }}
+    - name: Upload to GitHub Release
+      uses: xresloader/upload-to-github-release@v1
+      with:
+        file: ${{ inputs.globPattern }}
+        release_id: ${{ steps.get_release.outputs.id }}
+        overwrite: false
+        verbose: true
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}

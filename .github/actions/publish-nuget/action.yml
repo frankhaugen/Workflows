@@ -5,11 +5,11 @@ inputs:
   nugetKey:
     description: 'NuGet API Key'
     required: true
-  packagePath:
-    description: 'Path to NuGet package'
+  globPattern:
+    description: 'Glob pattern to find files to publish'
     required: true
 runs:
   using: "composite"
   steps:
-    - run: dotnet nuget push "${{ inputs.packagePath }}" -k ${{ inputs.nugetKey }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+    - run: dotnet nuget push "${{ inputs.globPattern }}" -k ${{ inputs.nugetKey }} -s https://api.nuget.org/v3/index.json --skip-duplicate
       shell: bash

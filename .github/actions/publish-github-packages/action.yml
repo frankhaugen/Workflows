@@ -8,13 +8,13 @@ inputs:
   token:
     description: 'GitHub Token'
     required: true
-  packagePath:
-    description: 'Path to package'
+  globPattern:
+    description: 'Glob pattern to find files to publish'
     required: true
 runs:
   using: "composite"
   steps:
     - run: dotnet nuget add source --username ${{ inputs.username }} --password ${{ inputs.token }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/${{ inputs.username }}/index.json"
       shell: bash
-    - run: dotnet nuget push "${{ inputs.packagePath }}" --source "github" --api-key ${{ inputs.token }} --skip-duplicate
+    - run: dotnet nuget push "${{ inputs.globPattern }}" --source "github" --api-key ${{ inputs.token }} --skip-duplicate
       shell: bash

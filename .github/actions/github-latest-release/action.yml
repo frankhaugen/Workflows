@@ -1,0 +1,43 @@
+﻿# .github/actions/github-latest-release/action.yml
+name: 'Get Latest Release From GitHub'
+description: 'Get Latest Release From GitHub'
+
+inputs:
+  token:
+    description: 'GitHub Token'
+    required: true
+
+outputs:
+    id:
+        description: 'Release ID'
+        value: ${{ steps.get_current_release.outputs.id }}
+    tag_name:
+        description: 'Release Tag Name'
+        value: ${{ steps.get_current_release.outputs.tag_name }}
+    name:
+        description: 'Release Name'
+        value: ${{ steps.get_current_release.outputs.name }}
+    body:
+        description: 'Release Body'
+        value: ${{ steps.get_current_release.outputs.body }}
+    draft:
+        description: 'Release Draft'
+        value: ${{ steps.get_current_release.outputs.draft }}
+    prerelease:
+        description: 'Release Prerelease'
+        value: ${{ steps.get_current_release.outputs.prerelease }}
+    created_at:
+        description: 'Release Created At'
+        value: ${{ steps.get_current_release.outputs.created_at }}
+    published_at:
+        description: 'Release Published At'
+        value: ${{ steps.get_current_release.outputs.published_at }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Get Current Release
+      id: get_current_release
+      uses: joutvhu/get-release@v1
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
