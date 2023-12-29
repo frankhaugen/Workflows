@@ -26,6 +26,6 @@ runs:
             with:
                 dotnetVersion: ${{ inputs.dotnetVersion }}
         -   name: Run Tests
-            run: dotnet test --configuration ${{ inputs.configuration }} --no-build --timeout ${{ inputs.timeout }}m
+            run: dotnet test --configuration ${{ inputs.configuration }} --no-build
             continue-on-error: ${{ inputs.continueOnError }}
             shell: bash
