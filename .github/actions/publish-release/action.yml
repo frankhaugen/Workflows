@@ -13,14 +13,14 @@ runs:
     steps:
         -   name: Get Current Release ID
             id: get_release_id
-            uses: ./.github/actions/github-latest-release
+            uses: frankhaugen/Workflows/.github/actions/github-latest-release@main
             with:
                 token: ${{ inputs.token }}
         -   name: Upload to GitHub Release
             uses: xresloader/upload-to-github-release@v1
             with:
                 file: ${{ inputs.globPattern }}
-                release_id: ${{ steps.get_release_id.outputs.id }}
+                release_id: ${{ get_release_id.outputs.id }}
                 overwrite: false
                 verbose: true
             env:

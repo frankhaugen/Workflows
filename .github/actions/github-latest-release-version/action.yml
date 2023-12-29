@@ -16,7 +16,7 @@ runs:
     using: "composite"
     steps:
         -   name: Checkout
-            uses: ./.github/actions/checkout-repo
+            uses: frankhaugen/Workflows/.github/actions/checkout-repo@main
         -   name: Get Latest Release Version tag or default
             run: |
                 LATEST_VERSION=$(gh release list | head -n 1 | awk '{print $1}') || true

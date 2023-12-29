@@ -15,7 +15,7 @@ runs:
     using: 'composite'
     steps:
         -   name: Setup .NET Core (${{ inputs.dotnetVersion }})
-            uses: ./.github/actions/dotnet-setup
+            uses: frankhaugen/Workflows/.github/actions/dotnet-setup@main
             with:
                 dotnetVersion: ${{ inputs.dotnetVersion }}
 

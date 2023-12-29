@@ -11,20 +11,20 @@ jobs:
     steps:
       - name: Get version from latest release
         id: get_version
-        uses: ./.github/actions/github-latest-release-version
+        uses: frankhaugen/Workflows/.github/actions/github-latest-release-version@main
       - name: Run .NET CI Action
-        uses: ./.github/actions/dotnet-ci
+        uses: frankhaugen/Workflows/.github/actions/dotnet-ci@main
         with:
           assemblyVersion: ${{ steps.get_version.outputs.version }}
       - name: Pack
-        uses: ./.github/actions/dotnet-pack
+        uses: frankhaugen/Workflows/.github/actions/dotnet-pack@main
         with:
           dotnetVersion: 8.0.x
           configuration: Release
           outputDirectory: nupkgs
           packageVersion: ${{ steps.get_version.outputs.version }}
       - name: Publish
-        uses: ./.github/actions/publish-repo
+        uses: frankhaugen/Workflows/.github/actions/publish-repo@main
         with:
           attachToRelease: true
           publishToGitHubPackages: true

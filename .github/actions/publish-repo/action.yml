@@ -42,20 +42,20 @@ runs:
     steps:
         -   name: Publish to NuGet.org
             if: ${{ inputs.publishToNuGet == 'true' }}
-            uses: ./.github/actions/publish-nuget
+            uses: frankhaugen/Workflows/.github/actions/publish-nuget@main
             with:
                 nugetKey: ${{ inputs.nugetKey }}
                 globPattern: ${{ inputs.globPattern }}
         -   name: Publish to GitHub Packages
             if: ${{ inputs.publishToGitHubPackages == 'true' }}
-            uses: ./.github/actions/publish-github-packages
+            uses: frankhaugen/Workflows/.github/actions/publish-github-packages@main
             with:
                 username: ${{ inputs.githubUsername }}
                 token: ${{ inputs.githubToken }}
                 globPattern: ${{ inputs.globPattern }}
         -   name: Attach to GitHub Release
             if: ${{ inputs.attachToRelease == 'true' }}
-            uses: ./.github/actions/publish-release
+            uses: frankhaugen/Workflows/.github/actions/publish-release@main
             with:
                 token: ${{ inputs.githubToken }}
                 globPattern: ${{ inputs.globPattern }}

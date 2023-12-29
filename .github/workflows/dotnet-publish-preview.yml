@@ -11,13 +11,13 @@ jobs:
     steps:
       - name: Get version from latest release
         id: get_version
-        uses: ./.github/actions/github-latest-release-version
+        uses: frankhaugen/Workflows/.github/actions/github-latest-release-version@main
       - name: Run .NET CI Action
-        uses: ./.github/actions/dotnet-ci
+        uses: frankhaugen/Workflows/.github/actions/dotnet-ci@main
         with:
           assemblyVersion: ${{ steps.get_version.outputs.version }}.${{ github.run_number }}
       - name: Publish preview NuGet
-        uses: ./.github/actions/dotnet-nuget-cd
+        uses: frankhaugen/Workflows/.github/actions/dotnet-nuget-cd@main
         with:
           dotnetVersion: 8.0.x
           configuration: Release

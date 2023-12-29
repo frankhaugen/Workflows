@@ -21,16 +21,15 @@ runs:
     using: "composite"
     steps:
         -   name: Setup .NET
-            uses: ./.github/actions/dotnet-setup@main
+            uses: frankhaugen/Workflows/.github/actions/dotnet-setup@main
             with:
                 dotnetVersion: ${{ inputs.dotnetVersion }}
-                configuration: ${{ inputs.configuration }}
         -   name: Build
-            uses: ./.github/actions/dotnet-build@main
+            uses: frankhaugen/Workflows/.github/actions/dotnet-build@main
             with:
                 configuration: ${{ inputs.configuration }}
                 assemblyVersion: ${{ inputs.assemblyVersion }}
         -   name: Test
-            uses: ./.github/actions/dotnet-test@main
+            uses: frankhaugen/Workflows/.github/actions/dotnet-test@main
             with:
                 configuration: ${{ inputs.configuration }}

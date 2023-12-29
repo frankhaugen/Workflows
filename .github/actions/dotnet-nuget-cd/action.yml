@@ -30,18 +30,18 @@ runs:
     using: "composite"
     steps:
         -   name: Setup .NET Core (${{ inputs.dotnetVersion }})
-            uses: ./.github/actions/dotnet-setup
+            uses: frankhaugen/Workflows/.github/actions/dotnet-setup@main
             with:
                 dotnetVersion: ${{ inputs.dotnetVersion }}
         -   name: Pack Project
-            uses: ./.github/actions/dotnet-pack
+            uses: frankhaugen/Workflows/.github/actions/dotnet-pack@main
             with:
                 configuration: ${{ inputs.configuration }}
                 outputDirectory: ${{ inputs.outputDirectory }}
                 dotnetVersion: ${{ inputs.dotnetVersion }}
                 packageVersion: ${{ inputs.packageVersion }}
         -   name: Publish to NuGet.org
-            uses: ./.github/actions/publish-nuget
+            uses: frankhaugen/Workflows/.github/actions/publish-nuget@main
             with:
                 nugetKey: ${{ inputs.nugetKey }}
                 globPattern: '**/*.nupkg'

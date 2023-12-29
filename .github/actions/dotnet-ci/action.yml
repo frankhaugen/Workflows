@@ -20,11 +20,11 @@ runs:
     using: "composite"
     steps:
         -   name: Checkout
-            uses: ./.github/actions/checkout-repo
+            uses: frankhaugen/Workflows/.github/actions/checkout-repo@main
         -   name: Setup .NET
-            uses: ./.github/actions/dotnet-setup
+            uses: frankhaugen/Workflows/.github/actions/dotnet-setup@main
         -   name: Build and Test
-            uses: ./.github/actions/dotnet-build-test
+            uses: frankhaugen/Workflows/.github/actions/dotnet-build-test@main
             with:
                 configuration: ${{ inputs.configuration }}
                 assemblyVersion: ${{ inputs.assemblyVersion }}

@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build and Test
-        uses: ./.github/actions/dotnet-ci
+        uses: frankhaugen/Workflows/.github/actions/dotnet-ci@main
         with:
           configuration: Release
           assemblyVersion: '0.0.1'
