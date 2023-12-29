@@ -10,8 +10,6 @@ outputs:
 runs:
     using: "composite"
     steps:
-        -   name: Checkout
-            uses: frankhaugen/Workflows/.github/actions/checkout-repo@main
         -   name: Get Latest Release Version tag
             id: find-latest-tag
             uses: oprypin/find-latest-tag@v1.1.1

@@ -12,18 +12,10 @@ inputs:
         description: 'Assembly Version'
         required: true
         default: 'not-set'
-    dotnetVersion:
-        description: 'DotNet Version'
-        required: false
-        default: '8.0.x'
 
 runs:
     using: "composite"
     steps:
-        -   name: Setup .NET
-            uses: frankhaugen/Workflows/.github/actions/dotnet-setup@main
-            with:
-                dotnetVersion: ${{ inputs.dotnetVersion }}
         -   name: Build
             uses: frankhaugen/Workflows/.github/actions/dotnet-build@main
             with:

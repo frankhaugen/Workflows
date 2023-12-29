@@ -9,6 +9,8 @@ jobs:
     name: Publish Preview Job
     runs-on: ubuntu-latest
     steps:
+      - uses: frankhaugen/Workflows/.github/actions/checkout@main
+      - uses: frankhaugen/Workflows/.github/actions/dotnet-setup@main
       - name: Get version from latest release
         id: get_version
         uses: frankhaugen/Workflows/.github/actions/github-latest-release-version@main

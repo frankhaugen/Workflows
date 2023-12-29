@@ -36,6 +36,10 @@ inputs:
         description: 'Flag to attach to GitHub Release'
         required: false
         default: 'false'
+    releaseId:
+        description: 'Release ID'
+        default: 'not-set'
+        required: false
 
 runs:
     using: "composite"
@@ -59,3 +63,4 @@ runs:
             with:
                 token: ${{ inputs.githubToken }}
                 globPattern: ${{ inputs.globPattern }}
+                releaseId: ${{ inputs.releaseId }}

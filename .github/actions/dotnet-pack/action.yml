@@ -10,14 +10,6 @@ inputs:
         description: 'Output directory for NuGet package'
         required: false
         default: 'nupkgs'
-    dotnetVersion:
-        description: '.NET SDK version'
-        required: false
-        default: '8.0.x'
-    includeSymbols:
-        description: 'Include symbols in the package'
-        required: false
-        default: 'false'
     packageVersion:
         description: 'Package version'
         required: true
@@ -25,10 +17,6 @@ inputs:
 runs:
     using: "composite"
     steps:
-        -   name: Setup .NET Core (${{ inputs.dotnetVersion }})
-            uses: frankhaugen/Workflows/.github/actions/dotnet-setup@main
-            with:
-                dotnetVersion: ${{ inputs.dotnetVersion }}
         -   name: Pack Project
             run: dotnet pack --configuration ${{ inputs.configuration }} --no-build --output ${{ inputs.outputDirectory }} /p:Version=${{ inputs.packageVersion }}
             shell: bash

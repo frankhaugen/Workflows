@@ -3,11 +3,6 @@ name: '.NET NuGet Continuous Delivery (pack and publish)'
 description: 'Package and publish a .NET project to NuGet.org'
 
 inputs:
-    dotnetVersion:
-        description: '.NET SDK version'
-        required: false
-        default: '8.0.x'
-    
     configuration:
         description: 'Build configuration (Release/Debug)'
         required: false
@@ -29,10 +24,6 @@ inputs:
 runs:
     using: "composite"
     steps:
-        -   name: Setup .NET Core (${{ inputs.dotnetVersion }})
-            uses: frankhaugen/Workflows/.github/actions/dotnet-setup@main
-            with:
-                dotnetVersion: ${{ inputs.dotnetVersion }}
         -   name: Pack Project
             uses: frankhaugen/Workflows/.github/actions/dotnet-pack@main
             with:
