@@ -29,18 +29,18 @@ jobs:
           configuration: Release
           outputDirectory: nupkgs
           packageVersion: ${{ steps.get_release.outputs.tag }}
-    -   name: Publish to NuGet.org
+      - name: Publish to NuGet.org
         uses: frankhaugen/Workflows/.github/actions/publish-nuget@main
         with:
           nugetKey: ${{ secrets.nugetKey }}
           globPattern: '**/*.nupkg'
-    -   name: Publish to GitHub Packages
+      - name: Publish to GitHub Packages
         uses: frankhaugen/Workflows/.github/actions/publish-github-packages@main
         with:
           username: ${{ github.repository_owner }}
           token: ${{ github.token }}
           globPattern: '**/*.nupkg'
-    -   name: Attach to GitHub Release
+      - name: Attach to GitHub Release
         uses: frankhaugen/Workflows/.github/actions/publish-release@main
         with:
           token: ${{ github.token }}
