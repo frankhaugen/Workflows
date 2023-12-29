@@ -1,30 +1,23 @@
 ﻿# .github/actions/get-latest-release-version/action.yml
 name: 'Get Latest Release Version'
 description: 'Get the latest release version with an optional default'
-inputs:
-    defaultVersion:
-        description: 'Default version if no release is found'
-        required: false
-        default: '0.1'
 
 outputs:
     version:
         description: 'Latest Release Version'
-        value: ${{ env.GITHUB_ENV.version }}
-
+        value: ${{ steps.find-latest-tag.outputs.tag }}
+        
 runs:
     using: "composite"
     steps:
         -   name: Checkout
             uses: frankhaugen/Workflows/.github/actions/checkout-repo@main
-        -   name: Get Latest Release Version tag or default
-            run: |
-                LATEST_VERSION=$(gh release list | head -n 1 | awk '{print $1}') || true
-                if [ -z "$LATEST_VERSION" ]; then
-                  LATEST_VERSION="${{ inputs.defaultVersion }}"
-                fi
-                echo "version=$LATEST_VERSION" >> $GITHUB_ENV
+        -   name: Get Latest Release Version tag
+            id: find-latest-tag
+            uses: oprypin/find-latest-tag@v1.1.1
+            with:
+              repository: ${{ github.repository }}
+              releases-only: true
+        -   name: Set version output
             shell: bash
-        -   name: output
-            run: echo ${{ env.GITHUB_ENV.version }}
-            shell: bash
+            run: echo "version=${{ steps.find-latest-tag.outputs.tag }}" >> $GITHUB_ENV
