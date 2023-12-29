@@ -23,4 +23,4 @@ jobs:
           configuration: Release
           nugetKey: ${{ secrets.NugetKey }}
           outputDirectory: nupkgs
-          packageVersion: ${{ steps.get_version.outputs.version }}.${{ github.run_number }}-preview
+          packageVersion: ${{ env.GITHUB_ENV.version }}.${{ github.run_number }}-preview
