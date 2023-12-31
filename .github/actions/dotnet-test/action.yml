@@ -6,14 +6,9 @@ inputs:
         description: 'Build configuration (Release/Debug)'
         required: false
         default: 'Release'
-    continueOnError:
-        description: 'Continue on error'
-        required: false
-        default: 'false'
 runs:
     using: "composite"
     steps:
         -   name: Run Tests
             run: dotnet test --configuration ${{ inputs.configuration }} --no-build
-            continue-on-error: ${{ inputs.continueOnError }}
             shell: bash
