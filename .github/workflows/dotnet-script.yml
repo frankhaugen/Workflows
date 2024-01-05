@@ -1,0 +1,26 @@
+﻿name: Install .net and run dotnet script (Ubuntu)
+
+on:
+    workflow_call:
+        inputs: 
+            script-path:
+                type: string
+                required: true
+                description: 'Path to the C# script file'
+    workflow_dispatch:
+        inputs: 
+            script-path:
+                description: 'Path to the C# script file'
+                required: true
+
+jobs:
+    run_script:
+        name: Run Script (${{ github.event.inputs.script-path }})
+        runs-on: ubuntu-latest
+        steps:
+            - uses: frankhaugen/Workflows/.github/actions/github-checkout@main
+            - uses: frankhaugen/Workflows/.github/actions/dotnet-setup@main
+            - uses: frankhaugen/Workflows/.github/actions/dotnet-script-install@main
+            - uses: frankhaugen/Workflows/.github/actions/dotnet-script-run@main
+              with:
+                  script-path: ${{ inputs.script-path }}

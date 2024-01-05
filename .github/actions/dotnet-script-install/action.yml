@@ -1,0 +1,9 @@
+﻿name: 'Install dotnet-script'
+description: 'Installs dotnet-script'
+
+runs:
+    using: "composite"
+    steps:
+        -   name: Install dotnet-script
+            run: dotnet tool install -g dotnet-script
+            shell: bash
