@@ -21,6 +21,7 @@ jobs:
             - uses: frankhaugen/Workflows/.github/actions/github-checkout@main
             - uses: frankhaugen/Workflows/.github/actions/dotnet-setup@main
             - uses: frankhaugen/Workflows/.github/actions/dotnet-script-install@main
+            - run: ls
             - uses: frankhaugen/Workflows/.github/actions/dotnet-script-run@main
               with:
                   script-path: ${{ inputs.script-path }}
