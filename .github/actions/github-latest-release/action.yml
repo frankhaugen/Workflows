@@ -50,3 +50,4 @@ runs:
             with:
                 repository: ${{ github.repository }}
                 releases-only: true
+            continue-on-error: true

@@ -1,4 +1,4 @@
-#r "nuget: Octokit, 9.1.0"
+#r "nuget: , 9.1.0"
 
 using Octokit;
 using System;

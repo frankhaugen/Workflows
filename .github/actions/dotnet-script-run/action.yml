@@ -1,5 +1,5 @@
-﻿name: 'Run a C# Script'
-description: 'Runs a C# script with .NET and NuGet package support using dotnet-script'
+﻿name: 'Run dotnet-script'
+description: 'Runs a C#/dotnet script with .NET and NuGet package support using dotnet-script'
 inputs:
     script-path:
         description: 'Path to the C# script file'
