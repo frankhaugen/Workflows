@@ -25,8 +25,8 @@ on:
 
 jobs:
     run_script:
-        name: Run Script (${{ github.event.inputs.script-path }})
-        runs-on: ${{ inputs.os }}
+        name: Run Script ("${{ github.event.inputs.script-path }}")
+        runs-on: "${{ inputs.os }}"
         steps:
             - uses: frankhaugen/Workflows/.github/actions/github-checkout@main
             - uses: frankhaugen/Workflows/.github/actions/dotnet-setup@main
@@ -34,4 +34,4 @@ jobs:
             - run: ls
             - uses: frankhaugen/Workflows/.github/actions/dotnet-script-run@main
               with:
-                  script-path: ${{ inputs.script-path }}
+                  script-path: "${{ inputs.script-path }}"
