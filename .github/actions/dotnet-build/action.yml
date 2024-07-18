@@ -24,3 +24,4 @@ runs:
         -   name: Build Project
             run: dotnet build --configuration ${{ inputs.configuration }} /p:Version=${{ inputs.assemblyVersion }} -verbosity:detailed
             shell: bash
+            working-directory: defaults.run.working-directory

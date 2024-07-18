@@ -13,3 +13,4 @@ runs:
     steps:
         -   run: dotnet nuget push "${{ inputs.globPattern }}" -k ${{ inputs.nugetKey }} -s https://api.nuget.org/v3/index.json --skip-duplicate
             shell: bash
+            working-directory: defaults.run.working-directory
