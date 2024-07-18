@@ -2,12 +2,18 @@
 
 on:
   workflow_call:
+    inputs:
+      os:
+        description: 'Operating system to run the workflow on'
+        required: true
+        default: 'ubuntu-latest'
+        type: string
   workflow_dispatch:
 
 jobs:
   pull_request:
     name: Pull Request Job
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.inputs.os }}
     steps:
       - uses: frankhaugen/Workflows/.github/actions/github-checkout@main
       - uses: frankhaugen/Workflows/.github/actions/dotnet-setup@main
