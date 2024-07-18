@@ -24,4 +24,4 @@ runs:
                 verbose: true
             env:
                 GITHUB_TOKEN: ${{ inputs.token }}
-            working-directory: defaults.run.working-directory
+            working-directory: ${{defaults.run.working-directory}}

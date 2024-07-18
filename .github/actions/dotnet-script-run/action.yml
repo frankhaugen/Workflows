@@ -11,4 +11,4 @@ runs:
         -   name: Run script
             run: dotnet script ${{ inputs.script-path }}
             shell: bash
-            working-directory: defaults.run.working-directory
+            working-directory: ${{defaults.run.working-directory}}
