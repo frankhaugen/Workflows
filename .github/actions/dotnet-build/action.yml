@@ -22,5 +22,5 @@ runs:
             with:
                 dotnetVersion: ${{ inputs.dotnetVersion }}
         -   name: Build Project
-            run: dotnet build --configuration ${{ inputs.configuration }} /p:Version=${{ inputs.assemblyVersion }} --Verbosity detailed
+            run: dotnet build --configuration ${{ inputs.configuration }} /p:Version=${{ inputs.assemblyVersion }} -verbosity:detailed
             shell: bash
