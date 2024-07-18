@@ -9,21 +9,7 @@ inputs:
 runs:
     using: "composite"
     steps:
-        - name: Check if required .NET Core SDK version is already installed
-          id: check_dotnet
-          shell: bash
-          run: |
-              REQUIRED_VERSION=${{ inputs.dotnetVersion }}
-              INSTALLED_VERSION=$(dotnet --version 2>/dev/null || echo "none")
-              if [[ "$INSTALLED_VERSION" == "$REQUIRED_VERSION" ]]; then
-                echo "already_installed=true" >> $GITHUB_ENV
-              else
-                echo "already_installed=false" >> $GITHUB_ENV
-              fi
-
         - name: Setup .NET Core SDK (${{ inputs.dotnetVersion }})
-          if: env.already_installed == 'false'
           uses: actions/setup-dotnet@v3
           with:
               dotnet-version: ${{ inputs.dotnetVersion }}
-        
