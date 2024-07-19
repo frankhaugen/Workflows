@@ -9,12 +9,6 @@ on:
         default: 'ubuntu-latest'
         type: string
   workflow_dispatch:
-    inputs:
-      os:
-        description: 'Operating system to run the workflow on'
-        required: true
-        default: 'ubuntu-latest'
-        type: string
 
 jobs:
   build_pack_publish_release:
