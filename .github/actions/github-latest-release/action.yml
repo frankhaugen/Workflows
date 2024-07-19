@@ -48,9 +48,6 @@ runs:
             uses: joutvhu/get-release@v1
             env:
                 GITHUB_TOKEN: ${{ inputs.token }}
-            with:
-                latest: true
-                pattern: '*.*'
         -   name: Get Latest Release Version tag
             id: find-latest-tag
             uses: oprypin/find-latest-tag@v1.1.1
