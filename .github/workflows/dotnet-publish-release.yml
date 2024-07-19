@@ -19,7 +19,7 @@ on:
 jobs:
   build_pack_publish_release:
     name: Release Job
-    runs-on: "${{ inputs.os }}"
+    runs-on: ${{ inputs.os }}
     steps:
       - uses: frankhaugen/Workflows/.github/actions/github-checkout@main
       - uses: frankhaugen/Workflows/.github/actions/dotnet-setup@main
