@@ -20,4 +20,4 @@ runs:
         -   name: Pack Project
             run: dotnet pack --configuration ${{ inputs.configuration }} --no-build --output ${{ inputs.outputDirectory }} /p:Version=${{ inputs.packageVersion }}
             shell: bash
-            working-directory: ${{defaults.run.working-directory}}
+            working-directory: defaults.run.working-directory
