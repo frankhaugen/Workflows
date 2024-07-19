@@ -7,4 +7,3 @@ runs:
         -   name: Install dotnet-script
             run: dotnet tool install -g dotnet-script
             shell: bash
-            working-directory: defaults.run.working-directory

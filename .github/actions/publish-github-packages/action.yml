@@ -16,7 +16,5 @@ runs:
     steps:
         -   run: dotnet nuget add source --username ${{ inputs.username }} --password ${{ inputs.token }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/${{ inputs.username }}/index.json"
             shell: bash
-            working-directory: defaults.run.working-directory
         -   run: dotnet nuget push "${{ inputs.globPattern }}" --source "github" --api-key ${{ inputs.token }} --skip-duplicate
             shell: bash
-            working-directory: defaults.run.working-directory

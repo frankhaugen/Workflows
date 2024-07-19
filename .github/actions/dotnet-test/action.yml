@@ -12,4 +12,3 @@ runs:
         -   name: Run Tests
             run: dotnet test --configuration ${{ inputs.configuration }} --no-build
             shell: bash
-            working-directory: defaults.run.working-directory
