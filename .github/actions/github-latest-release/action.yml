@@ -1,10 +1,6 @@
 ﻿# .github/actions/github-latest-release/action.yml
 name: 'Get Latest Release From GitHub'
 description: 'Get Latest Release From GitHub'
-author: "Frank R. Haugen"
-branding:
-  icon: 'package'
-  color: 'blue'
 
 inputs:
     token:
@@ -54,4 +50,4 @@ runs:
             with:
                 repository: ${{ github.repository }}
                 releases-only: true
-                token: ${{ inputs.token }}
+            continue-on-error: true
