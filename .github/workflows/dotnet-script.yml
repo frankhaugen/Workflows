@@ -3,11 +3,6 @@
 on:
     workflow_call:
         inputs: 
-            os:
-              description: 'Operating system to run the workflow on'
-              required: true
-              default: 'ubuntu-latest'
-              type: string
             script-path:
                 type: string
                 required: true
@@ -21,7 +16,7 @@ on:
 jobs:
     run_script:
         name: Run Script (${{ github.event.inputs.script-path }})
-        runs-on: ${{ github.event.inputs.os }}
+        runs-on: ubuntu-latest
         steps:
             - uses: frankhaugen/Workflows/.github/actions/github-checkout@main
             - uses: frankhaugen/Workflows/.github/actions/dotnet-setup@main
