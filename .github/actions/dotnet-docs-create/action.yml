@@ -4,7 +4,7 @@ inputs:
     dotnetVersion:
         description: '.NET SDK version to use'
         required: false
-        default: '8.0.x'
+        default: '9.0.x'
     outputDirectory:
         description: 'Output directory for documentation'
         required: false
