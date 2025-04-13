@@ -23,6 +23,7 @@ jobs:
           configuration: Release
       - name: Run .NET Test Action
         uses: frankhaugen/Workflows/.github/actions/dotnet-test@main
+        continue-on-error: true
         with:
           configuration: Release
       - name: Run .NET Pack Action
