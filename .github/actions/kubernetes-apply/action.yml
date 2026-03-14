@@ -1,0 +1,78 @@
+# .github/actions/kubernetes-apply/action.yml
+name: 'Apply Kubernetes Manifests'
+description: 'Deploy a rendered Kubernetes manifest bundle to a target cluster and verify rollout status.'
+inputs:
+    manifests-path:
+        description: 'Path to the rendered Kubernetes manifest bundle (file or directory).'
+        required: true
+    namespace:
+        description: 'Target Kubernetes namespace.'
+        required: true
+    cluster-name:
+        description: 'Logical cluster identifier.'
+        required: true
+    resource-group:
+        description: 'Azure resource group if AKS is used.'
+        required: false
+        default: ''
+    rollout-resources:
+        description: |
+            Optional newline-separated list of resources that require rollout verification.
+            Format: <kind>/<name> (e.g. deployment/my-app)
+        required: false
+        default: ''
+outputs:
+    deployment-result:
+        description: 'Deployment summary including namespace, resources applied, and rollout status.'
+        value: ${{ steps.apply-manifests.outputs.deployment-result }}
+runs:
+    using: "composite"
+    steps:
+        -   name: Establish AKS cluster context
+            if: inputs.resource-group != ''
+            shell: bash
+            run: |
+                az aks get-credentials \
+                    --resource-group "${{ inputs.resource-group }}" \
+                    --name "${{ inputs.cluster-name }}" \
+                    --overwrite-existing
+
+        -   name: Apply manifests
+            id: apply-manifests
+            shell: bash
+            run: |
+                set -euo pipefail
+
+                NAMESPACE="${{ inputs.namespace }}"
+                MANIFESTS_PATH="${{ inputs.manifests-path }}"
+
+                echo "Applying manifests from: ${MANIFESTS_PATH}"
+                kubectl apply \
+                    --namespace "${NAMESPACE}" \
+                    --filename "${MANIFESTS_PATH}"
+
+                ROLLOUT_RESOURCES="${{ inputs.rollout-resources }}"
+                ROLLOUT_STATUS="skipped"
+
+                if [ -n "$ROLLOUT_RESOURCES" ]; then
+                    ROLLOUT_STATUS="success"
+                    while IFS= read -r resource; do
+                        [[ -z "$resource" ]] && continue
+                        echo "Waiting for rollout: ${resource}"
+                        if ! kubectl rollout status "${resource}" \
+                                --namespace "${NAMESPACE}" \
+                                --timeout=5m; then
+                            echo "ERROR: Rollout failed for ${resource}"
+                            ROLLOUT_STATUS="failed"
+                            exit 1
+                        fi
+                    done <<< "$ROLLOUT_RESOURCES"
+                fi
+
+                RESULT=$(jq -n \
+                    --arg ns "${NAMESPACE}" \
+                    --arg cluster "${{ inputs.cluster-name }}" \
+                    --arg path "${MANIFESTS_PATH}" \
+                    --arg status "${ROLLOUT_STATUS}" \
+                    '{namespace: $ns, cluster: $cluster, manifestsPath: $path, rolloutStatus: $status}')
+                echo "deployment-result=${RESULT}" >> "$GITHUB_OUTPUT"
