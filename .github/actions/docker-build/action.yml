@@ -1,0 +1,88 @@
+# .github/actions/docker-build/action.yml
+name: 'Build Docker Images'
+description: 'Build one or more Docker images deterministically from a repository source tree. Does not push images.'
+inputs:
+    service-name:
+        description: 'Logical service name used in metadata and image naming.'
+        required: true
+    dockerfiles:
+        description: |
+            Newline-separated list of dockerfile definitions.
+            Each line: <name> <dockerfile-path> <build-context>
+        required: true
+    version:
+        description: 'Release version (e.g. 2026.3.8.1) used for tagging.'
+        required: true
+    registry:
+        description: 'Container registry hostname.'
+        required: false
+        default: 'ghcr.io'
+    repository-owner:
+        description: 'Organization or owner used to construct image names.'
+        required: false
+        default: '${{ github.repository_owner }}'
+outputs:
+    images:
+        description: 'JSON array describing built images (name, fullImageName, versionTag).'
+        value: ${{ steps.build-images.outputs.images }}
+    image-tags:
+        description: 'Newline-separated list of produced image tags.'
+        value: ${{ steps.build-images.outputs.image-tags }}
+runs:
+    using: "composite"
+    steps:
+        -   name: Build Docker images
+            id: build-images
+            shell: bash
+            run: |
+                set -euo pipefail
+
+                REGISTRY="${{ inputs.registry }}"
+                OWNER=$(echo "${{ inputs.repository-owner }}" | tr '[:upper:]' '[:lower:]')
+                SERVICE="${{ inputs.service-name }}"
+                VERSION="${{ inputs.version }}"
+
+                IMAGES_JSON="["
+                IMAGE_TAGS=""
+                FIRST=true
+
+                while IFS= read -r line; do
+                    # Skip empty lines
+                    [[ -z "$line" ]] && continue
+
+                    NAME=$(echo "$line" | awk '{print $1}')
+                    DOCKERFILE=$(echo "$line" | awk '{print $2}')
+                    CONTEXT=$(echo "$line" | awk '{print $3}')
+
+                    # Construct image name: registry/owner/service[-component]:version
+                    if [ "$NAME" = "$SERVICE" ]; then
+                        FULL_IMAGE="${REGISTRY}/${OWNER}/${SERVICE}:${VERSION}"
+                    else
+                        FULL_IMAGE="${REGISTRY}/${OWNER}/${SERVICE}-${NAME}:${VERSION}"
+                    fi
+
+                    echo "Building image: ${FULL_IMAGE} from ${DOCKERFILE} (context: ${CONTEXT})"
+                    docker build \
+                        --file "${DOCKERFILE}" \
+                        --tag "${FULL_IMAGE}" \
+                        "${CONTEXT}"
+
+                    if [ "$FIRST" = true ]; then
+                        FIRST=false
+                    else
+                        IMAGES_JSON="${IMAGES_JSON},"
+                    fi
+
+                    IMAGES_JSON="${IMAGES_JSON}{\"name\":\"${NAME}\",\"fullImageName\":\"${FULL_IMAGE}\",\"versionTag\":\"${VERSION}\"}"
+                    IMAGE_TAGS="${IMAGE_TAGS}${FULL_IMAGE}\n"
+                done <<< "${{ inputs.dockerfiles }}"
+
+                IMAGES_JSON="${IMAGES_JSON}]"
+
+                echo "images=${IMAGES_JSON}" >> "$GITHUB_OUTPUT"
+
+                {
+                    echo "image-tags<<EOF"
+                    printf "%b" "${IMAGE_TAGS}"
+                    echo "EOF"
+                } >> "$GITHUB_OUTPUT"
