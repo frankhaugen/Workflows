@@ -16,6 +16,6 @@ jobs:
 
   prerelease_nuget:
     name: Prerelease to NuGet.org ([nuget-preview])
-    if: github.event_name == 'release' && github.event.release.prerelease == true && (contains(github.event.release.name, '[nuget-preview]') || contains(github.event.release.body, '[nuget-preview]'))
+    if: github.event_name == 'release' && github.event.release.prerelease == true && (contains(github.event.release.name || '', '[nuget-preview]') || contains(github.event.release.body || '', '[nuget-preview]'))
     uses: frankhaugen/Workflows/.github/workflows/dotnet-publish-prerelease-nuget.yml@main
     secrets: inherit

@@ -1,6 +1,6 @@
-﻿# .github/actions/github-latest-release/action.yml
+# .github/actions/github-latest-release/action.yml
 name: 'Get Latest Release From GitHub'
-description: 'Get Latest Release From GitHub'
+description: 'Latest release tag and id when present; otherwise first repo tag or 0.1.0'
 
 inputs:
     token:
@@ -9,45 +9,116 @@ inputs:
 
 outputs:
     id:
-        description: 'Release ID'
-        value: ${{ steps.get_current_release.outputs.id }}
+        description: 'Latest release ID (empty if no published release)'
+        value: ${{ steps.resolve.outputs.id }}
     tag_name:
-        description: 'Release Tag Name'
-        value: ${{ steps.get_current_release.outputs.tag_name }}
+        description: 'Tag with v prefix'
+        value: ${{ steps.resolve.outputs.tag_name }}
     name:
         description: 'Release Name'
-        value: ${{ steps.get_current_release.outputs.name }}
+        value: ${{ steps.resolve.outputs.rel_name }}
     body:
         description: 'Release Body'
-        value: ${{ steps.get_current_release.outputs.body }}
+        value: ${{ steps.resolve.outputs.rel_body }}
     draft:
         description: 'Release Draft'
-        value: ${{ steps.get_current_release.outputs.draft }}
+        value: ${{ steps.resolve.outputs.rel_draft }}
     prerelease:
         description: 'Release Prerelease'
-        value: ${{ steps.get_current_release.outputs.prerelease }}
+        value: ${{ steps.resolve.outputs.rel_prerelease }}
     created_at:
         description: 'Release Created At'
-        value: ${{ steps.get_current_release.outputs.created_at }}
+        value: ${{ steps.resolve.outputs.rel_created_at }}
     published_at:
         description: 'Release Published At'
-        value: ${{ steps.get_current_release.outputs.published_at }}
+        value: ${{ steps.resolve.outputs.rel_published_at }}
     tag:
-        description: 'Release Tag'
-        value: ${{ steps.find-latest-tag.outputs.tag }}
+        description: 'Version without v prefix (for pack/build)'
+        value: ${{ steps.resolve.outputs.tag }}
 
 runs:
     using: "composite"
     steps:
-        -   name: Get Current Release
-            id: get_current_release
-            uses: joutvhu/get-release@v1
+        -   name: Resolve release or fallback tag
+            id: resolve
+            shell: bash
             env:
-                GITHUB_TOKEN: ${{ inputs.token }}
-        -   name: Get Latest Release Version tag
-            id: find-latest-tag
-            uses: oprypin/find-latest-tag@v1.1.1
-            with:
-                repository: ${{ github.repository }}
-                releases-only: true
-            continue-on-error: true
+                GH_TOKEN: ${{ inputs.token }}
+                REL_FILE: ${{ runner.temp }}/gh-latest-release.json
+            run: |
+                set -euo pipefail
+                REPO="${{ github.repository }}"
+                gh api "repos/$REPO/releases/latest" -o "$REL_FILE" 2>/dev/null || echo '{}' > "$REL_FILE"
+
+                if command -v python3 >/dev/null 2>&1; then
+                  PYTHON=python3
+                else
+                  PYTHON=python
+                fi
+                "$PYTHON" <<'PY'
+                import json
+                import os
+                import subprocess
+
+                out_path = os.environ["GITHUB_OUTPUT"]
+                rel_path = os.environ["REL_FILE"]
+                repo = os.environ["GITHUB_REPOSITORY"]
+                token = os.environ["GH_TOKEN"]
+
+                with open(rel_path, encoding="utf-8") as f:
+                    try:
+                        d = json.load(f)
+                    except json.JSONDecodeError:
+                        d = {}
+
+                tag_raw = d.get("tag_name")
+                rel_id = d.get("id")
+                if not tag_raw:
+                    r = subprocess.run(
+                        [
+                            "gh",
+                            "api",
+                            f"repos/{repo}/tags",
+                            "--jq",
+                            ".[0].name // empty",
+                        ],
+                        capture_output=True,
+                        text=True,
+                        env={**os.environ, "GH_TOKEN": token},
+                    )
+                    tag_raw = (r.stdout or "").strip() or None
+                    rel_id = None
+                    d = {}
+
+                if not tag_raw:
+                    tag_raw = "0.1.0"
+
+                tr = str(tag_raw)
+                if tr.startswith("v"):
+                    tr = tr[1:]
+                tag = tr
+                tag_name = "v" + tag
+                rid = "" if rel_id is None else str(rel_id)
+
+                def w(name, val):
+                    with open(out_path, "a", encoding="utf-8") as out:
+                        out.write(f"{name}={val}\n")
+
+                w("tag", tag)
+                w("tag_name", tag_name)
+                w("id", rid)
+                w("rel_draft", str(d.get("draft", False)).lower())
+                w("rel_prerelease", str(d.get("prerelease", False)).lower())
+                w("rel_created_at", d.get("created_at") or "")
+                w("rel_published_at", d.get("published_at") or "")
+
+                rel_name = d.get("name") or ""
+                rel_body = d.get("body") or ""
+                with open(out_path, "a", encoding="utf-8") as out:
+                    out.write("rel_name<<__GH_LR_NAME__\n")
+                    out.write(rel_name + "\n")
+                    out.write("__GH_LR_NAME__\n")
+                    out.write("rel_body<<__GH_LR_BODY__\n")
+                    out.write(rel_body + "\n")
+                    out.write("__GH_LR_BODY__\n")
+                PY
