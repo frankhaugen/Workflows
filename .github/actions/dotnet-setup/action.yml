@@ -1,15 +1,15 @@
-﻿# .github/actions/dotnet-setup/action.yml
+# .github/actions/dotnet-setup/action.yml
 name: 'Setup .NET'
 description: 'Setup .NET environment'
 inputs:
     dotnetVersion:
         description: '.NET SDK version'
         required: false
-        default: '9.0.x'
+        default: '10.0.x'
 runs:
     using: "composite"
     steps:
         -   name: Setup .NET Core SDK (${{ inputs.dotnetVersion }})
-            uses: actions/setup-dotnet@v3
+            uses: actions/setup-dotnet@v4
             with:
                 dotnet-version: ${{ inputs.dotnetVersion }}

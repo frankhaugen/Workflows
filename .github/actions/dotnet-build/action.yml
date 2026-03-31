@@ -1,4 +1,4 @@
-﻿# .github/actions/dotnet-build/action.yml
+# .github/actions/dotnet-build/action.yml
 name: 'Build .NET Project'
 description: 'Build a .NET project with specified parameters'
 inputs:
@@ -13,7 +13,7 @@ inputs:
     dotnetVersion:
         description: '.NET SDK version'
         required: false
-        default: '9.0.x'
+        default: '10.0.x'
 runs:
     using: "composite"
     steps:

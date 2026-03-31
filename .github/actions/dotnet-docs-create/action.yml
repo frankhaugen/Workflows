@@ -1,10 +1,10 @@
-﻿name: 'DefaultDocumentation Action'
+name: 'DefaultDocumentation Action'
 description: 'Generates markdown documentation from XML comments using DefaultDocumentation.Console'
 inputs:
     dotnetVersion:
         description: '.NET SDK version to use'
         required: false
-        default: '9.0.x'
+        default: '10.0.x'
     outputDirectory:
         description: 'Output directory for documentation'
         required: false
