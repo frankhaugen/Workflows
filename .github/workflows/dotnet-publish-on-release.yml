@@ -1,0 +1,21 @@
+name: Release pipeline for NuGet packages (Ubuntu)
+
+# Stable (non-prerelease) or manual dispatch → NuGet.org + GitHub Packages + attach to release.
+# Prerelease with [nuget-preview] in the release title or body → NuGet.org prerelease only.
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  stable_release:
+    name: Stable release (NuGet + GitHub Packages)
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'release' && github.event.release.prerelease == false)
+    uses: frankhaugen/Workflows/.github/workflows/dotnet-publish-release.yml@main
+    secrets: inherit
+
+  prerelease_nuget:
+    name: Prerelease to NuGet.org ([nuget-preview])
+    if: github.event_name == 'release' && github.event.release.prerelease == true && (contains(github.event.release.name, '[nuget-preview]') || contains(github.event.release.body, '[nuget-preview]'))
+    uses: frankhaugen/Workflows/.github/workflows/dotnet-publish-prerelease-nuget.yml@main
+    secrets: inherit

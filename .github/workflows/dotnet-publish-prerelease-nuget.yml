@@ -1,0 +1,48 @@
+name: Publish prerelease to NuGet.org (Ubuntu)
+
+# Invoked when a GitHub prerelease is published and the title or body contains [nuget-preview].
+# Pushes SemVer prerelease packages (…-preview) to NuGet.org only; GitHub Packages are fed from merge (preview) builds.
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  build_pack_publish_prerelease_nuget:
+    name: Prerelease → NuGet.org
+    runs-on: ubuntu-latest
+    steps:
+      - uses: frankhaugen/Workflows/.github/actions/github-checkout@main
+      - uses: frankhaugen/Workflows/.github/actions/dotnet-setup@main
+      - name: Resolve package version from release tag
+        id: ver
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            TAG="${{ github.event.release.tag_name }}"
+          else
+            TAG="${GITHUB_REF_NAME:-0.0.0}"
+          fi
+          TAG="${TAG#v}"
+          echo "base=${TAG}" >> "$GITHUB_OUTPUT"
+      - name: Run .NET Build Action
+        uses: frankhaugen/Workflows/.github/actions/dotnet-build@main
+        with:
+          assemblyVersion: ${{ steps.ver.outputs.base }}.${{ github.run_number }}
+          configuration: Release
+      - name: Run .NET Test Action
+        uses: frankhaugen/Workflows/.github/actions/dotnet-test@main
+        continue-on-error: true
+        with:
+          configuration: Release
+      - name: Run .NET Pack Action
+        uses: frankhaugen/Workflows/.github/actions/dotnet-pack@main
+        with:
+          configuration: Release
+          outputDirectory: nupkgs
+          packageVersion: ${{ steps.ver.outputs.base }}.${{ github.run_number }}-preview
+      - name: Publish to NuGet.org
+        uses: frankhaugen/Workflows/.github/actions/publish-nuget@main
+        with:
+          nugetKey: ${{ secrets.nugetKey }}
+          globPattern: '**/*.nupkg'

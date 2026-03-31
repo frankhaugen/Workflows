@@ -1,4 +1,4 @@
-﻿name: Publish Preview Workflow for nugets (Ubuntu)
+name: Publish Preview Workflow for nugets (Ubuntu)
 
 on:
   workflow_call:
@@ -32,8 +32,9 @@ jobs:
           configuration: Release
           outputDirectory: nupkgs
           packageVersion: ${{ steps.get_release.outputs.tag }}.${{ github.run_number }}-preview
-      - name: Publish to NuGet.org
-        uses: frankhaugen/Workflows/.github/actions/publish-nuget@main
+      - name: Publish to GitHub Packages
+        uses: frankhaugen/Workflows/.github/actions/publish-github-packages@main
         with:
-          nugetKey: ${{ secrets.nugetKey }}
+          username: ${{ github.repository_owner }}
+          token: ${{ github.token }}
           globPattern: '**/*.nupkg'
