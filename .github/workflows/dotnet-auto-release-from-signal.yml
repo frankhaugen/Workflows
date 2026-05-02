@@ -1,0 +1,130 @@
+# Create a GitHub Release + tag only when a release signal is present on a push to main.
+# Your existing workflow on `release: types: [published]` continues to drive NuGet/GitHub Packages.
+#
+# Signals (any one):
+#   - Commit messages in the push contain [publish-release] (e.g. squash merge PR title).
+#   - Any changed path under .github/releasenotes/ (add/edit a .md release note, or next-version).
+#
+# Default version: same as Frank.Mapping — latest published release tag, bump minor, patch 0.
+# Override: change .github/releasenotes/next-version to a single line SemVer (e.g. 4.0.0).
+
+name: Auto release from signal
+
+on:
+  workflow_call:
+
+permissions:
+  contents: write
+
+jobs:
+  maybe_create_release:
+    name: Create release when signalled
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect signal and compute tag
+        id: plan
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            if (context.ref !== 'refs/heads/main') {
+              core.setOutput('should_release', 'false');
+              return;
+            }
+            const payload = context.payload;
+            const commits = payload.commits || [];
+            let blob = '';
+            for (const c of commits) blob += (c.message || '') + '\n';
+            blob += (payload.head_commit && payload.head_commit.message) || '';
+            const msgSignal = /\[publish-release\]/i.test(blob);
+
+            const { execSync } = require('child_process');
+            const before = payload.before;
+            const after = payload.after || context.sha;
+            let names = '';
+            try {
+              if (before && !/^0+$/.test(before)) {
+                names = execSync(`git diff --name-only ${before} ${after}`, { encoding: 'utf8' });
+              } else {
+                names = execSync(`git diff-tree --no-commit-id --name-only -r ${after}`, { encoding: 'utf8' });
+              }
+            } catch (e) {
+              core.warning(String(e));
+            }
+            const lines = names.split(/\r?\n/).filter(Boolean);
+            const norm = (f) => f.replace(/\\/g, '/');
+            const pathSignal = lines.some((f) => norm(f).startsWith('.github/releasenotes/'));
+            const nextVersionPath = '.github/releasenotes/next-version';
+            const touchedNext = lines.some((f) => norm(f) === nextVersionPath);
+
+            if (!msgSignal && !pathSignal) {
+              core.setOutput('should_release', 'false');
+              return;
+            }
+
+            const fs = require('fs');
+            let nextTag = null;
+            if (touchedNext && fs.existsSync(nextVersionPath)) {
+              const raw = fs.readFileSync(nextVersionPath, 'utf8').trim();
+              const m = raw.match(/^\s*(\d+)\.(\d+)\.(\d+)\s*$/);
+              if (m) nextTag = `v${m[1]}.${m[2]}.${m[3]}`;
+            }
+            if (!nextTag) {
+              try {
+                const { data: releases } = await github.rest.repos.listReleases({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  per_page: 1,
+                });
+                if (releases.length > 0) {
+                  const tag = releases[0].tag_name.replace(/^v/i, '');
+                  const parts = tag.split('.');
+                  const major = parseInt(parts[0], 10);
+                  const minor = parseInt(parts[1] || '0', 10) + 1;
+                  nextTag = `v${major}.${minor}.0`;
+                }
+              } catch (_) {}
+            }
+            if (!nextTag) nextTag = 'v1.0.0';
+
+            core.setOutput('should_release', 'true');
+            core.setOutput('tag_name', nextTag);
+
+      - name: Create GitHub release
+        if: steps.plan.outputs.should_release == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const tag = '${{ steps.plan.outputs.tag_name }}';
+            const dir = '.github/releasenotes';
+            let extra = '';
+            try {
+              if (fs.existsSync(dir)) {
+                const files = fs.readdirSync(dir).filter((f) => f.endsWith('.md')).sort();
+                const chunks = [];
+                for (const f of files) {
+                  if (f.toLowerCase() === 'readme.md') continue;
+                  const text = fs.readFileSync(path.join(dir, f), 'utf8').trim();
+                  if (text) chunks.push(`## ${f}\n\n${text}`);
+                }
+                if (chunks.length) extra = chunks.join('\n\n');
+              }
+            } catch (_) {}
+
+            await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: tag,
+              name: `Release ${tag}`,
+              body: extra || undefined,
+              draft: false,
+              prerelease: false,
+              generate_release_notes: true,
+            });
