@@ -44,5 +44,5 @@ jobs:
       - name: Publish to NuGet.org
         uses: frankhaugen/Workflows/.github/actions/publish-nuget@main
         with:
-          nugetKey: ${{ secrets.nugetKey }}
+          nugetKey: ${{ secrets.NUGETKEY }}
           globPattern: '**/*.nupkg'
