@@ -31,7 +31,8 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            if (context.ref !== 'refs/heads/main') {
+            const allowed = new Set(['refs/heads/main', 'refs/heads/master']);
+            if (!allowed.has(context.ref)) {
               core.setOutput('should_release', 'false');
               return;
             }
