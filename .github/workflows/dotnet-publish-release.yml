@@ -1,4 +1,4 @@
-name: Release Workflow for nugets (Ubuntu)
+name: Publish: NuGet for nugets (Ubuntu)
 
 on:
   workflow_call:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   build_pack_publish_release:
-    name: Release Job    
+    name: Publish NuGet    
     runs-on: ubuntu-latest
     steps:
       - uses: frankhaugen/Workflows/.github/actions/github-checkout@main

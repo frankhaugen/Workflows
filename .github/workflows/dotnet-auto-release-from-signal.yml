@@ -8,7 +8,7 @@
 # Default version: same as Frank.Mapping — latest published release tag, bump minor, patch 0.
 # Override: change .github/releasenotes/next-version to a single line SemVer (e.g. 4.0.0).
 
-name: Auto release from signal
+name: Release: signal
 
 on:
   workflow_call:
@@ -18,7 +18,7 @@ permissions:
 
 jobs:
   maybe_create_release:
-    name: Create release when signalled
+    name: Create GitHub release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

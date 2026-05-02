@@ -1,4 +1,4 @@
-name: Publish prerelease to NuGet.org (Ubuntu)
+name: Publish: NuGet prerelease (reusable)
 
 # Invoked when a GitHub prerelease is published and the title or body contains [nuget-preview].
 # Pushes SemVer prerelease packages (…-preview) to NuGet.org only; GitHub Packages are fed from merge (preview) builds.

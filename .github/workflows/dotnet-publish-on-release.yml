@@ -1,4 +1,4 @@
-name: Release pipeline for NuGet packages (Ubuntu)
+name: Publish: NuGet (reusable)
 
 # Stable (non-prerelease) or manual dispatch → NuGet.org + GitHub Packages + attach to release.
 # Prerelease with [nuget-preview] in the release title or body → NuGet.org prerelease only.

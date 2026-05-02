@@ -1,4 +1,4 @@
-﻿name: Pull Request Workflow for nugets (Ubuntu)
+name: CI: pull request for nugets (Ubuntu)
 
 on:
   workflow_call:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   pull_request:
-    name: Pull Request Job
+    name: CI
     runs-on: ubuntu-latest
     steps:
       - uses: frankhaugen/Workflows/.github/actions/github-checkout@main
